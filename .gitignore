@@ -5,7 +5,7 @@
 *.dll
 *.so
 *.dylib
-_debug_bin*
+__debug_bin*
 /_test
 /vendor/
 /Godeps/
