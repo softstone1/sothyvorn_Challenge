@@ -2,14 +2,14 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "tls_private_key" "deployer" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 resource "aws_key_pair" "deployer" {
   key_name   = "terraform-deployer-key"
-  public_key = tls_private_key.deployer.public_key_openssh
+  public_key = file("${var.public_key_path}")
+}
+
+# Fetch information about an existing key pair on AWS
+data "aws_key_pair" "deployer" {
+  key_name = "terraform-deployer-key"
 }
 
 resource "aws_security_group" "web" {
@@ -56,8 +56,8 @@ resource "aws_instance" "web" {
 
   connection {
     type        = "ssh"
-    user        = "admin"  
-    private_key = tls_private_key.deployer.private_key_pem
+    user        = "debian"  
+    private_key = file("${var.private_key_path}")
     host        = self.public_ip  
   }
 
@@ -76,9 +76,4 @@ resource "aws_instance" "web" {
 
 output "web_instance_ip" {
   value = aws_instance.web.public_ip
-}
-
-output "private_key" {
-  value     = tls_private_key.deployer.private_key_pem
-  sensitive = true
 }
