@@ -56,7 +56,7 @@ resource "aws_instance" "web" {
 
   connection {
     type        = "ssh"
-    user        = "debian"  
+    user        = "admin"  
     private_key = tls_private_key.deployer.private_key_pem
     host        = self.public_ip  
   }
@@ -65,32 +65,13 @@ resource "aws_instance" "web" {
     Name = "WebServer"
   }
 
-  provisioner "file" {
-    source      = "webserver-setup.yaml"
-    destination = "/tmp/webserver-setup.yaml"
-
-    connection {
-      type        = "ssh"
-      user        = "debian"
-      private_key = tls_private_key.deployer.private_key_pem
-      host        = self.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get install -y ansible",
-      "ansible-playbook /tmp/webserver-setup.yaml -e 'email_id=${var.email_id}'"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "debian"
-      private_key = tls_private_key.deployer.private_key_pem
-      host        = self.public_ip
-    }
-  }
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt-get update
+    sudo apt-get install -y git
+    sudo apt-get install -y ansible
+    ansible-pull -U https://github.com/softstone1/sothyvorn_Challenge.git -d /tmp/ansible webserver-setup.yaml -e 'email_id=${var.email_id}'
+    EOF
 }
 
 output "web_instance_ip" {
