@@ -1,0 +1,59 @@
+---
+- name: Configure Web Server with Nginx
+  hosts: all
+  become: true
+  tasks:
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: present
+
+    - name: Start and enable Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create a simple HTML file
+      copy:
+        dest: "/usr/share/nginx/html/index.html"
+        content: |
+          <html>
+          <head>
+          <title>Hello World</title>
+          </head>
+          <body>
+          <h1>Hello, World!</h1>
+          <p>Welcome to my static page served by Nginx on AWS EC2.</p>
+          </body>
+          </html>
+
+    - name: Generate a self-signed SSL Certificate
+      shell: |
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=US/ST=NY/L=New York/O=Example Company/OU=Org/CN=example.com"
+      args:
+        creates: /etc/ssl/certs/nginx-selfsigned.crt
+
+    - name: Configure Nginx for HTTPS and redirect HTTP to HTTPS
+      blockinfile:
+        path: /etc/nginx/nginx.conf
+        block: |
+          server {
+              listen 80;
+              server_name example.com;
+              return 301 https://$host$request_uri;
+          }
+
+          server {
+              listen 443 ssl;
+              server_name example.com;
+
+              ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+              ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+
+              location / {
+                  root   /usr/share/nginx/html;
+                  index  index.html index.htm;
+              }
+          }
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"

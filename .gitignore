@@ -1,25 +1,28 @@
-// for golang and vs code
 # Go
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+*.test
+*.out
+*.prof
+*.a
+*.o
 __debug_bin*
-/_test
-/vendor/
-/Godeps/
-/.glide/
-/.idea/
-/.vscode/
-/.vs/
-/.history/
-/.sourcemaps/
-/.test/
-/.cache/
-/.tmp/
-/.bak/
-/.DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
 
 # Visual Studio Code
 .vscode/
+*.code-workspace
