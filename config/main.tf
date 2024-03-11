@@ -59,7 +59,7 @@ resource "aws_instance" "web" {
     #!/bin/bash
     apt-get update
     apt-get install -y ansible git
-    ansible-pull -U https://github.com/softstone1/sothyvorn_Challenge.git webserver-setup.yaml -e 'email_id=${var.email_id}'
+    ansible-pull -U https://github.com/softstone1/sothyvorn_Challenge.git webserver-setup.yaml -e 'email_id=${var.email_id}' -vvv
     EOF
 }
 
