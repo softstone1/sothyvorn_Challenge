@@ -50,8 +50,14 @@
         content: |
           server {
               listen 80 default_server;
+          server {
+              listen 80 default_server;
               listen [::]:80 default_server;
+              server_name _;
+              return 301 https://$host$request_uri;
+          }
 
+          server {
               listen 443 ssl default_server;
               listen [::]:443 ssl default_server;
               ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
