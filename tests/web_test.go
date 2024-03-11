@@ -10,7 +10,7 @@ func TestHTTPSToHTTPRedirect(t *testing.T) {
 	// Skipping certificate verification for self-signed certs
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	resp, err := http.Get("http://ec2-54-208-160-78.compute-1.amazonaws.com")
+	resp, err := http.Get("https://ec2-54-159-135-51.compute-1.amazonaws.com/")
 	if err != nil {
 		t.Fatalf("Failed to make request: %v", err)
 	}
