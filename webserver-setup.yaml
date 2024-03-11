@@ -28,35 +28,47 @@
           </head>
           <body>
           <h1>Hello, World!</h1>
-          <p>Welcome to my static page served by Nginx on AWS EC2.</p>
+          <p>Welcome to my static page served by Nginx.</p>
           </body>
           </html>
 
     - name: Generate a self-signed SSL Certificate
-      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=US/ST=NY/L=New York/O=Alwayswork Company/OU=Org/CN=alwayswork.space"
+      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=US/ST=ID/L=Meridian/O=OSO7/OU=AI/CN=localhost"
       args:
         creates: /etc/ssl/certs/nginx-selfsigned.crt
 
-    - name: Configure Nginx for HTTPS and redirect HTTP to HTTPS
-      blockinfile:
-        path: /etc/nginx/sites-available/default
-        block: |
-          server {
-              listen 80;
-              server_name alwayswork.space;
-              return 301 https://$host$request_uri;
-          }
+    - name: Remove default Nginx configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
 
+    - name: Create Nginx server block file
+      copy:
+        dest: "/etc/nginx/sites-available/my_site"
+        content: |
           server {
-              listen 443 ssl;
-              server_name alwayswork.space;
+              listen 80 default_server;
+              listen [::]:80 default_server;
 
+              listen 443 ssl default_server;
+              listen [::]:443 ssl default_server;
               ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
               ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
 
+              root /var/www/html;
+              index index.html;
+
               location / {
-                  root   /var/www/html;
-                  index  index.html index.htm;
+                  try_files $uri $uri/ =404;
               }
           }
-        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+
+    - name: Enable the Nginx server block
+      shell: ln -s /etc/nginx/sites-available/my_site /etc/nginx/sites-enabled/my_site
+      args:
+        creates: /etc/nginx/sites-enabled/my_site
+
+    - name: Reload Nginx to apply changes
+      service:
+        name: nginx
+        state: reloaded
