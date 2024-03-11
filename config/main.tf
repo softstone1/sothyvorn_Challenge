@@ -61,11 +61,14 @@ resource "aws_instance" "web" {
   }
 
   user_data = <<-EOF
-    #!/bin/bash
-    sudo apt-get update
-    sudo apt-get install -y git
-    sudo apt-get install -y ansible
-    ansible-pull -U https://github.com/softstone1/sothyvorn_Challenge.git -d /tmp/ansible webserver-setup.yaml -e 'email_id=${var.email_id}'
+    #cloud-config
+    package_upgrade: true
+    packages:
+      - git
+      - ansible
+      - nginx
+    runcmd:
+      - ansible-pull -U https://github.com/softstone1/sothyvorn_Challenge.git -d /tmp/ansible webserver-setup.yaml -e 'email_id=${var.email_id}'
     EOF
 }
 
