@@ -3,8 +3,12 @@
   hosts: all
   become: true
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
     - name: Install Nginx
-      yum:
+      apt:
         name: nginx
         state: present
 
@@ -16,7 +20,7 @@
 
     - name: Create a simple HTML file
       copy:
-        dest: "/usr/share/nginx/html/index.html"
+        dest: "/var/www/html/index.html"
         content: |
           <html>
           <head>
@@ -29,18 +33,17 @@
           </html>
 
     - name: Generate a self-signed SSL Certificate
-      shell: |
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=US/ST=NY/L=New York/O=Example Company/OU=Org/CN=alwayswork.space"
+      shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=US/ST=NY/L=New York/O=Example Company/OU=Org/CN=alwayswork.space"
       args:
         creates: /etc/ssl/certs/nginx-selfsigned.crt
 
     - name: Configure Nginx for HTTPS and redirect HTTP to HTTPS
       blockinfile:
-        path: /etc/nginx/nginx.conf
+        path: /etc/nginx/sites-available/default
         block: |
           server {
               listen 80;
-              server_name example.com;
+              server_name alwayswork.space;
               return 301 https://$host$request_uri;
           }
 
@@ -52,7 +55,7 @@
               ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
 
               location / {
-                  root   /usr/share/nginx/html;
+                  root   /var/www/html;
                   index  index.html index.htm;
               }
           }

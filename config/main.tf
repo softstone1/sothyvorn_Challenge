@@ -44,31 +44,20 @@ resource "aws_security_group" "web" {
 }
 
 resource "aws_instance" "web" {
-  ami                    = "ami-058bd2d568351da34" 
+  ami                    = "ami-058bd2d568351da34"
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.web.id]
-
-  connection {
-    type        = "ssh"
-    user        = "debian"  
-    private_key = file("${var.private_key_path}")
-    host        = self.public_ip  
-  }
 
   tags = {
     Name = "WebServer"
   }
 
   user_data = <<-EOF
-    #cloud-config
-    package_upgrade: true
-    packages:
-      - git
-      - ansible
-      - nginx
-    runcmd:
-      - ansible-pull -U https://github.com/softstone1/sothyvorn_Challenge.git -d /tmp/ansible webserver-setup.yaml -e 'email_id=${var.email_id}'
+    #!/bin/bash
+    apt-get update
+    apt-get install -y ansible git
+    ansible-pull -U https://github.com/softstone1/sothyvorn_Challenge.git webserver-setup.yaml -e 'email_id=${var.email_id}'
     EOF
 }
 
