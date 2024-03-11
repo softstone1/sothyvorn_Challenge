@@ -2,6 +2,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
+// key pair from the public key
 resource "aws_key_pair" "deployer" {
   key_name   = "terraform-deployer-key"
   public_key = file("${var.public_key_path}")
@@ -9,7 +10,7 @@ resource "aws_key_pair" "deployer" {
 
 resource "aws_security_group" "web" {
   name        = "terraform-example-web"
-  
+  // Allow SSH for local machine
   ingress {
     from_port   = 22
     to_port     = 22
@@ -53,6 +54,7 @@ resource "aws_instance" "web" {
     Name = "WebServer"
   }
 
+// cloud-init to setup the web server with Ansible
   user_data = <<-EOF
     #!/bin/bash
     apt-get update

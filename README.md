@@ -1,8 +1,8 @@
 # Challenge 1
 ## Infra
 - Github repository: https://github.com/softstone1/sothyvorn_Challenge
-- use terraform to create an ec2 instance with a security group, generate an ssh key and install ansible
-- Use webserver-setup ansible playbook to configure nginx server with static content and perform https redirection
+- Use terraform to create an ec2 instance with a security group, and use cloud-init to execute ansible playbook
+- Use webserver-setup ansible playbook to configure nginx server with static content, create self-certificate and perform https redirection
 - Run terraform init and apply it to provision the infrastructure.
 - Test and verify https connection with web_test.go
 
