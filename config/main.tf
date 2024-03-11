@@ -7,11 +7,6 @@ resource "aws_key_pair" "deployer" {
   public_key = file("${var.public_key_path}")
 }
 
-# Fetch information about an existing key pair on AWS
-data "aws_key_pair" "deployer" {
-  key_name = "terraform-deployer-key"
-}
-
 resource "aws_security_group" "web" {
   name        = "terraform-example-web"
   

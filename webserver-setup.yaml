@@ -30,7 +30,7 @@
 
     - name: Generate a self-signed SSL Certificate
       shell: |
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=US/ST=NY/L=New York/O=Example Company/OU=Org/CN=example.com"
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt -subj "/C=US/ST=NY/L=New York/O=Example Company/OU=Org/CN=alwayswork.space"
       args:
         creates: /etc/ssl/certs/nginx-selfsigned.crt
 
@@ -46,7 +46,7 @@
 
           server {
               listen 443 ssl;
-              server_name example.com;
+              server_name alwayswork.space;
 
               ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
               ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
