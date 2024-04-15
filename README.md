@@ -1,7 +1,7 @@
 # Challenge 1
 ## Infra
 - Github repository: https://github.com/softstone1/sothyvorn_Challenge
-- demo url: https://ec2-18-212-87-166.compute-1.amazonaws.com/
+- demo url: https://ec2-107-23-154-226.compute-1.amazonaws.com/
 - Use terraform to create an ec2 instance with a security group, and use cloud-init to execute ansible playbook
 - Use webserver-setup ansible playbook to configure nginx server with static content, create self-certificate and perform https redirection
 - Run terraform init and apply it to provision the infrastructure.
